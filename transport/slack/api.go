@@ -1,15 +1,15 @@
 package slack
 
 import (
-	"fmt"
-	"net/http"
-	"io/ioutil"
 	"encoding/json"
-	"superslackr/util"
+	"fmt"
+	"github.com/ingar/barglebot/util"
+	"io/ioutil"
+	"net/http"
 )
 
 type SlackAPICaller interface {
-	Call(apiMethod string) (interface{})
+	Call(apiMethod string) interface{}
 }
 
 type RestAPICaller struct {
