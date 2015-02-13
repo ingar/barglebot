@@ -3,19 +3,48 @@ package slack
 import (
 	"fmt"
 	"github.com/gorilla/websocket"
+	"github.com/ingar/barglebot"
+	"github.com/ingar/barglebot/util"
 )
 
-func Connect(apiToken string, incomingEvents chan interface{}) {
-	apiCaller := RestAPICaller{apiToken}
-	url := authenticate(apiCaller)
+type BotConnection struct {
+	url       string
+	botUserId string
+	messages  chan barglebot.Message
+	conn      *websocket.Conn
+}
 
-	fmt.Printf("Dialing %s\n", url)
-	conn, _, _ := websocket.DefaultDialer.Dial(url, nil)
+func debug(s string) {
+	fmt.Println("[SLACK]", s)
+}
 
-	var f interface{}
+func (self BotConnection) handleEvents() {
+	debug(fmt.Sprintf("Dialing %s\n", self.url))
+	conn, _, _ := websocket.DefaultDialer.Dial(self.url, nil)
+	self.conn = conn
+
 	for {
-		conn.ReadJSON(&f)
-		incomingEvents <- f
+		var o interface{}
+		conn.ReadJSON(&o)
+		self.handleEvent(o.(map[string]interface{}))
 	}
 }
 
+func (self BotConnection) handleEvent(o map[string]interface{}) {
+	debug(fmt.Sprintf("Received event:\n%s", util.FmtJSON(o)))
+
+	if _, ok := o["subtype"]; !ok && o["type"] == "message" && self.botUserId != o["user"] {
+		m := Message{self.conn, o}
+		self.messages <- m
+		debug("Forwarding on to bot.")
+	} else {
+		debug("Invalid event for bot consumption.")
+	}
+}
+
+func Connect(apiToken string, incomingEvents chan barglebot.Message) {
+	apiCaller := RestAPICaller{apiToken}
+	url, userId := authenticate(apiCaller)
+	connection := BotConnection{url, userId, incomingEvents, nil}
+	connection.handleEvents()
+}

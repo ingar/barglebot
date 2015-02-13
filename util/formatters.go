@@ -1,11 +1,11 @@
 package util
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 )
 
-func DumpJSON(o *interface{}) {
-	pretty, _ := json.MarshalIndent(&o, "", "  ")
-	fmt.Printf("%v\n", string(pretty))
+func FmtJSON(o interface{}) string {
+	pretty, _ := json.MarshalIndent(o, "", "  ")
+	return fmt.Sprintf("%v", string(pretty))
 }

@@ -24,7 +24,6 @@ func (self RestAPICaller) Call(apiMethod string) (result interface{}) {
 
 	json.Unmarshal(body, &result) // ignore error!
 
-	fmt.Println("Authenticated:")
-	util.DumpJSON(&result)
+	debug(fmt.Sprintf("Authenticated:\n%s", util.FmtJSON(&result)))
 	return
 }
