@@ -42,9 +42,10 @@ func (self BotConnection) handleEvent(o map[string]interface{}) {
 	}
 }
 
-func Connect(apiToken string, incomingEvents chan barglebot.Message) {
+func Connect(apiToken string, incomingEvents chan barglebot.Message) (users []User) {
 	apiCaller := RestAPICaller{apiToken}
-	url, userId := authenticate(apiCaller)
+	url, userId, users := authenticate(apiCaller)
 	connection := BotConnection{url, userId, incomingEvents, nil}
-	connection.handleEvents()
+	go connection.handleEvents()
+	return
 }
