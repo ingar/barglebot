@@ -1,6 +1,8 @@
 # barglebot
 
-Quickstart (main.go):
+A small framework for creating chat bots in Go
+
+Example (main.go):
 
 ```
 package main
