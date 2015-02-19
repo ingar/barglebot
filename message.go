@@ -26,6 +26,9 @@ package barglebot
 
 type Message interface {
 	Text() string
+	Tokens() []string
+	Args() []string
+	Sender() string
 	Respond(string)
 	DebugDump() string
 }

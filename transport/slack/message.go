@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/websocket"
 	"time"
+	"strings"
 )
 
 type Message struct {
@@ -13,6 +14,20 @@ type Message struct {
 
 func (self Message) Text() string {
 	return self.payload["text"].(string)
+}
+
+func (self Message) Tokens() []string {
+	return strings.Split(self.Text(), " ")
+}
+
+func (self Message) Sender() string {
+	userId := self.payload["user"].(string)
+	user, _ := FindUserById(userId)
+	return user.Name
+}
+
+func (self Message) Args() []string {
+	return self.Tokens()[1:]
 }
 
 func (self Message) Respond(text string) {

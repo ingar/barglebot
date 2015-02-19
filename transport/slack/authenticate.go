@@ -21,5 +21,8 @@ func authenticate(api SlackAPICaller) (wsUrl string, userId string, users []User
 		fmt.Println("name:", m["name"].(string))
 	}
 
+	// store this for use by the slack transport
+	knownUsers = users
+
 	return
 }
